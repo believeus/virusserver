@@ -5,22 +5,23 @@
 <hibernate-configuration>
 
 	<session-factory>
-		
+
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="hbm2ddl.auto">update</property>
 		<property name="show_sql">true</property>
 		<property name="format_sql">false</property>
-		
+
 		<property name="hibernate.cache.use_second_level_cache">true</property>
 		<property name="hibernate.cache.region_prefix">com.etech.ehcache</property>
-		 <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="hibernate.cache.provider_configuration_file_resource_path">ehcache.xml</property>
 		<property name="hibernate.cache.use_structured_entries">true</property>
 		<property name="hibernate.cache.use_query_cache">true</property>
 		<property name="hibernate.current_session_context_class">thread</property>
 
-		<mapping class="cn.believeus.model.Tuser"/>
-		<mapping class="cn.believeus.model.Plate"/>
+		<mapping class="cn.believeus.model.Tuser" />
+		<mapping class="cn.believeus.model.Plate" />
+		<mapping class="cn.believeus.model.PDF" />
 
 	</session-factory>
 
