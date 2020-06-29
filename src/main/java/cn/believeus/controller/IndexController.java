@@ -76,8 +76,7 @@ public class IndexController {
 			if (exitVal != 0)
 				return "error-pdf";
 			String message = bundle.getString("emailbody");
-			// mailService.sendMail(title, message, pdf.getEmail(), pdfpath,
-			// title);
+			mailService.sendMail(title, message, pdf.getEmail(), pdfpath, title);
 			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();
