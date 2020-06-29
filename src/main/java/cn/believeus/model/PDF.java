@@ -15,7 +15,8 @@ public class PDF {
 	private int id;
 	public String barcode;
 	public String email;
-	public String name;
+	public String wellname;
+	public String patientname;
 	public String color;
 	@Column(columnDefinition = "text")
 	public String note;
@@ -23,6 +24,7 @@ public class PDF {
 	public String createTime;
 	public String parent;
 	public byte positive;
+	public String operator;
 
 	public int getId() {
 		return id;
@@ -30,6 +32,23 @@ public class PDF {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	
+	public String getWellname() {
+		return wellname;
+	}
+
+	public void setWellname(String wellname) {
+		this.wellname = wellname;
+	}
+
+	public String getPatientname() {
+		return patientname;
+	}
+
+	public void setPatientname(String patientname) {
+		this.patientname = patientname;
 	}
 
 	public String getCreateTime() {
@@ -80,15 +99,7 @@ public class PDF {
 		this.barcode = barcode;
 	}
 
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	
 	public byte getPositive() {
 		return positive;
 	}
@@ -103,6 +114,14 @@ public class PDF {
 
 	public void setParent(String parent) {
 		this.parent = parent;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
 	}
 
 }

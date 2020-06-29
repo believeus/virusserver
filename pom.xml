@@ -9,7 +9,11 @@
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/net.oschina.zcx7878/fastdfs-client-java -->
-		
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>redis.clients</groupId>
@@ -722,7 +726,11 @@
 				<artifactId>fastjson</artifactId>
 				<version>1.2.28</version>
 			</dependency>
-			
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>20180130</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<!--End Name:wuqiwei Date:2013-12-20 AddReason:当多个个jar包分别有依赖不同版本的jar时，就使用该配置的jar -->

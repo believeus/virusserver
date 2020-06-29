@@ -78,7 +78,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<h3 >Patient's Information:</h3>
 					<div class="info-box">
 						<div>
-						<span class="fill-info">Patient's Name :</span> <span id="patient-name">${pdf.name}</span>
+						<span class="fill-info">Patient's Name :</span> <span id="patient-name">${pdf.patientname}</span>
 						</div>
 					</div>
 				</div>
@@ -101,7 +101,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<span class="fill-info">Date and Time: :</span> <span id="color-scan-date">${pdf.createTime}</span>
 						</div>
 						<div>
-						<span class="fill-info">Technologist:</span> <span id="color-scan-person">Dr. Jason</span>
+						<span class="fill-info">Technologist:</span> <span id="color-scan-person">${pdf.operator}</span>
 						</div>
 					</div>
 				</div>

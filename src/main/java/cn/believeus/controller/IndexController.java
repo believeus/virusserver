@@ -27,6 +27,21 @@ public class IndexController {
 	private MailService mailService;
 
 	@ResponseBody
+	@RequestMapping("/patient/result")
+	public PDF findPDF(String platebarcode, String wellbarcode, String wellname) {
+		Plate plate = (Plate) service.findObject(Plate.class, "barcode", platebarcode);
+		JSONObject jsonObject = JSONObject.parseObject(plate.getData()).getJSONObject(wellname);
+		String color = jsonObject.getString("color");
+		PDF v = (PDF) service.findObject(PDF.class, "barcode", wellbarcode);
+		PDF pdf = (v == null) ? new PDF() : v;
+		pdf.setBarcode(wellbarcode);
+		pdf.setColor(color);
+		pdf.setParent(platebarcode);
+		service.saveOrUpdate(pdf);
+		return pdf;
+	}
+
+	@ResponseBody
 	@RequestMapping("/patient/build/pdf")
 	public String sendPDF(String data) {
 		try {
@@ -44,22 +59,25 @@ public class IndexController {
 			// 保存数据
 			PDF pview = (PDF) service.findObject(PDF.class, "barcode", pdf.barcode);
 			PDF view = (pview == null) ? pdf : pview;
-			String title = pdf.name.trim()+ "'s diagnosis report.pdf";
-			view.setName(pdf.name.trim());
+			String title = pdf.patientname.trim() + "'s diagnosis report.pdf";
+			view.setPatientname(pdf.patientname.trim());
 			view.setCreateTime(pdf.createTime);
 			view.setPath(pdfpath);
 			view.setBarcode(pdf.barcode);
 			view.setEmail(pdf.email);
 			view.setNote(pdf.note);
 			view.setPositive(pdf.positive);
+			view.setOperator(pdf.operator);
 			service.saveOrUpdate(view);
 			String cmd = (os.toLowerCase().startsWith("win") ? "cmd /c " : "") + phantomjsexe + " " + rasterizejs + " " + url + " " + pdfpath;
 			System.out.println(cmd);
 			Process proc = Runtime.getRuntime().exec(cmd);
 			int exitVal = proc.waitFor(); // 阻塞当前线程，并等待外部程序中止后获取结果码
-			if (exitVal != 0)return "error-pdf";
+			if (exitVal != 0)
+				return "error-pdf";
 			String message = bundle.getString("emailbody");
-			mailService.sendMail(title, message, pdf.getEmail(), pdfpath, title);
+			// mailService.sendMail(title, message, pdf.getEmail(), pdfpath,
+			// title);
 			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,6 +101,7 @@ public class IndexController {
 		Plate plate = (Plate) service.findObject(Plate.class, "barcode", barcode);
 		plate = (plate == null) ? new Plate(barcode, data) : plate.setBarcode(barcode).setData(data);
 		service.saveOrUpdate(plate);
+
 		return "success";
 	}
 
