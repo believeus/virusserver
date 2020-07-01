@@ -98,10 +98,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<h3 >Colorimetric Scanning Information:</h3>
 					<div class="info-box">
 						<div>
-						<span class="fill-info">Date and Time: :</span> <span id="color-scan-date">${pdf.createTime}</span>
+						<span class="fill-info">Date and Time: :</span> <span id="color-scan-date">${well.scantime}</span>
 						</div>
 						<div>
-						<span class="fill-info">Technologist:</span> <span id="color-scan-person">${pdf.operator}</span>
+						<span class="fill-info">Technologist:</span> <span id="color-scan-person">${well.operator}</span>
 						</div>
 					</div>
 				</div>

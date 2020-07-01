@@ -13,115 +13,85 @@ public class PDF {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	public String barcode;
 	public String email;
 	public String wellname;
-	public String patientname;
-	public String color;
 	@Column(columnDefinition = "text")
 	public String note;
-	public String path;
-	public String createTime;
+	public String pdf;
 	public String parent;
+	public String patientname;
 	public byte positive;
-	public String operator;
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public PDF setId(int id) {
 		this.id = id;
-	}
-
-	
-	public String getWellname() {
-		return wellname;
-	}
-
-	public void setWellname(String wellname) {
-		this.wellname = wellname;
-	}
-
-	public String getPatientname() {
-		return patientname;
-	}
-
-	public void setPatientname(String patientname) {
-		this.patientname = patientname;
-	}
-
-	public String getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(String createTime) {
-		this.createTime = createTime;
-	}
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
+		return this;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public PDF setEmail(String email) {
 		this.email = email;
+		return this;
 	}
 
-	public String getBarcode() {
-		return barcode;
+	public String getWellname() {
+		return wellname;
 	}
 
-	public void setBarcode(String barcode) {
-		this.barcode = barcode;
+	public PDF setWellname(String wellname) {
+		this.wellname = wellname;
+		return this;
 	}
 
-
-	public byte getPositive() {
-		return positive;
+	public String getNote() {
+		return note;
 	}
 
-	public void setPositive(byte positive) {
-		this.positive = positive;
+	public PDF setNote(String note) {
+		this.note = note;
+		return this;
+	}
+
+	public String getPdf() {
+		return pdf;
+	}
+
+	public PDF setPdf(String pdf) {
+		this.pdf = pdf;
+		return this;
 	}
 
 	public String getParent() {
 		return parent;
 	}
 
-	public void setParent(String parent) {
+	public PDF setParent(String parent) {
 		this.parent = parent;
+		return this;
 	}
 
-	public String getOperator() {
-		return operator;
+	public byte getPositive() {
+		return positive;
 	}
 
-	public void setOperator(String operator) {
-		this.operator = operator;
+	public PDF setPositive(byte positive) {
+		this.positive = positive;
+		return this;
+	}
+
+	public String getPatientname() {
+		return patientname;
+	}
+
+	public PDF setPatientname(String patientname) {
+		this.patientname = patientname;
+		return this;
 	}
 
 }

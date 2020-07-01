@@ -91,9 +91,9 @@ public class MailService {
 	         Transport.send(mime);
         } catch (Exception e) {
             e.printStackTrace();
-            return "error";
+            return "error-email";
         }
-        System.out.println("Send success!");
+        System.out.println("email Send success!");
         return "success";
     }
 }
