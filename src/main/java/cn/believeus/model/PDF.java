@@ -13,6 +13,7 @@ public class PDF {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
+	public String barcode;
 	public String email;
 	public String wellname;
 	@Column(columnDefinition = "text")
@@ -91,6 +92,15 @@ public class PDF {
 
 	public PDF setPatientname(String patientname) {
 		this.patientname = patientname;
+		return this;
+	}
+
+	public String getBarcode() {
+		return barcode;
+	}
+
+	public PDF setBarcode(String barcode) {
+		this.barcode = barcode;
 		return this;
 	}
 

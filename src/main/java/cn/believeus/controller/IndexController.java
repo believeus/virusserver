@@ -3,8 +3,6 @@ package cn.believeus.controller;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -28,38 +26,16 @@ import cn.believeus.variables.Variables;
 import com.alibaba.fastjson.JSONObject;
 
 @Controller
-public class IndexController extends Observable {
+public class IndexController {
 	@Resource
 	private MySQLService service;
 	@Resource
 	private MailService mailService;
 
-	public IndexController() {
-		this.addObserver(new Observer() {
-			@Override
-			public void update(Observable o, Object data) {
-				Plate plate = (Plate) data;
-				JSONObject jsonObject = JSONObject.parseObject(plate.getData());
-				Set<Entry<String, Object>> entrySet = jsonObject.entrySet();
-				Iterator<Entry<String, Object>> iterator = entrySet.iterator();
-				while (iterator.hasNext()) {
-					Entry<String, Object> entry = iterator.next();
-					JSONObject value = (JSONObject) entry.getValue();
-					Well well = JSONObject.toJavaObject(value, Well.class);
-					PDF v = (PDF) service.findObject(PDF.class, "wellname", well.name);
-					if (v == null) {
-						PDF pdf = new PDF().setWellname(well.name).setParent(plate.getBarcode());
-						service.saveOrUpdate(pdf);
-					}
-				}
-			}
-		});
-	}
-
 	@ResponseBody
 	@RequestMapping("/patient/result")
-	public PDF findPDF(String wellname) {
-		PDF v = (PDF) service.findObject(PDF.class, "wellname", wellname);
+	public PDF findPDF(String barcode, String parent) {
+		PDF v = (PDF) service.findObject(PDF.class, "barcode", barcode, "parent", parent);
 		return v;
 	}
 
@@ -83,7 +59,7 @@ public class IndexController extends Observable {
 			String scantime = new SimpleDateFormat("yyyy-MM-dd#hh#mm#ss").format(well.scantime);
 			String pdfpath = pdfstore + scantime + "-HKG-Diagnostic-Report.pdf";
 			// 保存数据
-			PDF pview = (PDF) service.findObject(PDF.class, "wellname", pdf.wellname);
+			PDF pview = (PDF) service.findObject(PDF.class, "barcode", well.barcode, "parent", well.parent);
 			PDF view = (pview == null) ? pdf : pview;
 			String title = pdf.patientname.trim() + "'s diagnosis report.pdf";
 			view.setPatientname(pdf.patientname.trim());
@@ -92,6 +68,7 @@ public class IndexController extends Observable {
 			view.setNote(pdf.note);
 			view.setPositive(pdf.positive);
 			view.setWellname(well.name);
+			view.setBarcode(well.barcode);
 			service.saveOrUpdate(view);
 			String cmd = (os.toLowerCase().startsWith("win") ? "cmd /c " : "") + phantomjsexe + " " + rasterizejs + " " + url + " " + pdfpath;
 			System.out.println(cmd);
@@ -111,12 +88,12 @@ public class IndexController extends Observable {
 	@RequestMapping("/patient/{barcode}/{wellname}/pdfview")
 	public ModelAndView pdfview(@PathVariable("barcode") String barcode, @PathVariable("wellname") String wellname) {
 		ModelAndView modelView = new ModelAndView();
-		PDF pdf = (PDF) service.findObjectList(PDF.class, "parent", barcode, "wellname", wellname).get(0);
-		Plate plate = (Plate)service.findObject(Plate.class,"barcode", pdf.parent);
+		PDF pdf = (PDF) service.findObject(PDF.class, "parent", barcode, "wellname", wellname);
+		Plate plate = (Plate) service.findObject(Plate.class, "barcode", pdf.parent);
 		String vm = JSONObject.parseObject(plate.getData()).getString(pdf.wellname);
 		Well well = JSONObject.toJavaObject(JSONObject.parseObject(vm), Well.class);
 		modelView.addObject("pdf", pdf);
-		modelView.addObject("well",well);
+		modelView.addObject("well", well);
 		modelView.setViewName("/WEB-INF/front/virus-report.jsp");
 		return modelView;
 	}
@@ -127,19 +104,51 @@ public class IndexController extends Observable {
 		Plate plate = (Plate) service.findObject(Plate.class, "barcode", barcode);
 		plate.setData(data);
 		service.saveOrUpdate(plate);
-		notifyObservers(plate);
-		setChanged();
+		JSONObject jsonObject = JSONObject.parseObject(plate.getData());
+		Set<Entry<String, Object>> entrySet = jsonObject.entrySet();
+		Iterator<Entry<String, Object>> iterator = entrySet.iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Object> entry = iterator.next();
+			JSONObject value = (JSONObject) entry.getValue();
+			Well well = JSONObject.toJavaObject(value, Well.class);
+			PDF v = (PDF) service.findObject(PDF.class, "parent", plate.getBarcode(), "wellname", well.name);
+			PDF pv = (v == null) ? new PDF() : v;
+			PDF pdf = pv.setWellname(well.name).setParent(plate.getBarcode()).setBarcode(well.barcode);
+			service.saveOrUpdate(pdf);
+		}
 		return "success";
 	}
 
 	@ResponseBody
-	@RequestMapping("/plate/save")
-	public String save(String barcode, String data) {
+	@RequestMapping("/plate/rmcolor")
+	public String rmcolor(String barcode, String data) {
 		Plate plate = (Plate) service.findObject(Plate.class, "barcode", barcode);
-		Plate pv = (plate == null) ? new Plate(barcode, data) : plate.setBarcode(barcode).setData(data);
+		plate.setBarcode(barcode).setData(data);
+		service.saveOrUpdate(plate);
+		return "success";
+	}
+
+	@ResponseBody
+	@RequestMapping("/plate/create")
+	public String create(String barcode, String data) {
+		Plate pv = new Plate(barcode, data);
 		service.saveOrUpdate(pv);
-		notifyObservers(pv);
-		setChanged();
+		return "success";
+	}
+
+	@ResponseBody
+	@RequestMapping("/barcode/update")
+	public String updatebarcode(String data) {
+		Well well = JSONObject.toJavaObject(JSONObject.parseObject(data),Well.class);
+		Plate plate = (Plate) service.findObject(Plate.class, "barcode", well.parent);
+		JSONObject jsonObject = JSONObject.parseObject(plate.getData());
+		jsonObject.put(well.name, JSONObject.toJSON(well));
+		plate.setData(jsonObject.toJSONString());
+		service.saveOrUpdate(plate);
+		PDF v = (PDF) service.findObject(PDF.class, "parent", plate.getBarcode(), "wellname", well.name);
+		PDF pv = (v == null) ? new PDF() : v;
+		PDF pdf = pv.setWellname(well.name).setParent(plate.getBarcode()).setBarcode(well.barcode);
+		service.saveOrUpdate(pdf);
 		return "success";
 	}
 
@@ -148,6 +157,20 @@ public class IndexController extends Observable {
 	public Plate findData(String barcode) {
 		Plate plate = (Plate) service.findObject(Plate.class, "barcode", barcode);
 		return plate;
+	}
+
+	@ResponseBody
+	@RequestMapping("/plate/findwell")
+	public Well findWell(String barcode) {
+		PDF pdf = (PDF) service.findObject(PDF.class, "barcode", barcode);
+		if (pdf == null)
+			return null;
+		Plate plate = (Plate) service.findObject(Plate.class, "barcode", pdf.parent);
+		if (plate == null)
+			return null;
+		String vm = JSONObject.parseObject(plate.getData()).getString(pdf.wellname);
+		Well well = JSONObject.toJavaObject(JSONObject.parseObject(vm), Well.class);
+		return well;
 	}
 
 	@ResponseBody
