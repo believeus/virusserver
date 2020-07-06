@@ -40,6 +40,14 @@ public class IndexController {
 	}
 
 	@ResponseBody
+	@RequestMapping("/patient/statis")
+	public String statis() {
+		Long negative = (Long) service.findObject("select count(*) from  PDF v where positive=0 ");
+		Long positive = (Long) service.findObject("select count(*) from  PDF where positive=1 ");
+		return negative+"@"+positive;
+	}
+
+	@ResponseBody
 	@RequestMapping("/patient/build/pdf")
 	public String sendPDF(String data) {
 		try {
@@ -139,7 +147,7 @@ public class IndexController {
 	@ResponseBody
 	@RequestMapping("/barcode/update")
 	public String updatebarcode(String data) {
-		Well well = JSONObject.toJavaObject(JSONObject.parseObject(data),Well.class);
+		Well well = JSONObject.toJavaObject(JSONObject.parseObject(data), Well.class);
 		Plate plate = (Plate) service.findObject(Plate.class, "barcode", well.parent);
 		JSONObject jsonObject = JSONObject.parseObject(plate.getData());
 		jsonObject.put(well.name, JSONObject.toJSON(well));
