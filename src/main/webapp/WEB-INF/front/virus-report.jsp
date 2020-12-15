@@ -4,6 +4,7 @@ String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="date" uri="/tag/datetag.tld"%>  
 <!DOCTYPE html>
 <html>
 	<head>
@@ -13,13 +14,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<style>
 			#container{
 				height: auto;
-				width: 90%;
+				width: 70%;
 				margin: 0 auto;
 				position: relative;
 			}
 			#img{
 				width: 100%;
-				height: 99px;
 				margin: 0 auto;
 				text-align: center;
 			}
@@ -35,6 +35,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			.sub-title-box{
 				width: 100%;
 				height: 123px;
+			}
+			span{
+			font-family: sans-serif;
 			}
 			h3{
 				width: 100%;
@@ -68,18 +71,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div id="container">
 			<div>
 				<div id="img">
-				 <img  src="static/image/logo.png"/>
+				 <img  src="static/image/virusbar.png"/>
 				</div>
-				<div id="title">
-					HKG epi THERAPEUTICS Ltd. 
-				</div>
+				
 				<div style="width: 100%;height: 56px;"></div>
 				<div class="sub-title-box">
 					<h3 >Patient's Information:</h3>
 					<div class="info-box">
-						<div>
-						<span class="fill-info">Patient's Name :</span> <span id="patient-name">${pdf.patientname}</span>
-						</div>
+						<div><span class="fill-info">Patient's Name :</span> <span id="patient-name">${pdf.patientname}</span></div>
+						<div><span class="fill-info">Simple's Id :</span> <span id="simple- Id">${pdf.barcode}</span></div>
 					</div>
 				</div>
 				<div class="sub-title-box">
@@ -98,10 +98,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<h3 >Colorimetric Scanning Information:</h3>
 					<div class="info-box">
 						<div>
-						<span class="fill-info">Date and Time: :</span> <span id="color-scan-date">${well.scantime}</span>
+						<span class="fill-info">Date: </span> <span id="color-scan-date"><date:date pattern="yyyy-MM-dd HH:mm:ss" value="${pdf.createtime}"/></span>
 						</div>
 						<div>
-						<span class="fill-info">Technologist:</span> <span id="color-scan-person">${well.operator}</span>
+						<span class="fill-info">Lab's Director:</span> <span id="color-scan-person">${pdf.labdirector}</span>
 						</div>
 					</div>
 				</div>
@@ -109,14 +109,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<span >Test Result: </span>
 					<span id="test-result">
 						<c:choose>
-							<c:when test="${pdf.positive==1}">POSITIVE</c:when>
-							<c:otherwise>NEGATIVIE</c:otherwise>
+							<c:when test="${pdf.positive==1}"><span style="color:red">POSITIVE</span></c:when>
+							<c:otherwise><span style="color:green">NEGATIVIE</span> </c:otherwise>
 						</c:choose> 
 					</span>
 				</div>
 				<h2>Remark: </h2>
 				<div id="remark">${pdf.note}</div>
 			</div>
+			<div><div style="float:right;"><img src="static/image/logo.png"></div></div>
 		</div>
 	</body>
 </html>

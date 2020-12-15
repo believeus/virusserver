@@ -22,6 +22,24 @@ public class PDF {
 	public String parent;
 	public String patientname;
 	public byte positive;
+	public String labdirector;
+	public long createtime;
+
+	public long getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(long createtime) {
+		this.createtime = createtime;
+	}
+
+	public String getLabdirector() {
+		return labdirector;
+	}
+
+	public void setLabdirector(String labdirector) {
+		this.labdirector = labdirector;
+	}
 
 	public int getId() {
 		return id;

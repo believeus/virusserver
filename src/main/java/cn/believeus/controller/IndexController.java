@@ -1,8 +1,8 @@
 package cn.believeus.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -64,9 +64,8 @@ public class IndexController {
 			String rasterizejs = getClass().getClassLoader().getResource("rasterize.js").getPath();
 			rasterizejs = os.toLowerCase().startsWith("win") ? rasterizejs.substring(1) : rasterizejs;
 			String url = host + "patient/" + plate.getBarcode() + "/" + well.name + "/pdfview.jhtml";
-			String scantime = new SimpleDateFormat("yyyy-MM-dd#hh#mm#ss").format(well.scantime);
-			String pdfpath = pdfstore + scantime + "-HKG-Diagnostic-Report.pdf";
-			// 保存数据
+			String pdfpath = pdfstore +well.barcode + "-HKG-Diagnostic-Report.pdf";
+			// 保存更新数据
 			PDF pview = (PDF) service.findObject(PDF.class, "barcode", well.barcode, "parent", well.parent);
 			PDF view = (pview == null) ? pdf : pview;
 			String title = pdf.patientname.trim() + "'s diagnosis report.pdf";
@@ -77,13 +76,14 @@ public class IndexController {
 			view.setPositive(pdf.positive);
 			view.setWellname(well.name);
 			view.setBarcode(well.barcode);
+			view.setLabdirector(pdf.labdirector);
+			view.setCreatetime(new Date().getTime());
 			service.saveOrUpdate(view);
 			String cmd = (os.toLowerCase().startsWith("win") ? "cmd /c " : "") + phantomjsexe + " " + rasterizejs + " " + url + " " + pdfpath;
 			System.out.println(cmd);
 			Process proc = Runtime.getRuntime().exec(cmd);
 			int exitVal = proc.waitFor(); // 阻塞当前线程，并等待外部程序中止后获取结果码
-			if (exitVal != 0)
-				return "error-pdf";
+			if (exitVal != 0) return "error-pdf";
 			String message = bundle.getString("emailbody");
 			String v = mailService.sendMail(title, message, pdf.getEmail(), pdfpath, title);
 			return v;
